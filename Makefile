@@ -66,7 +66,7 @@ re: fclean all
 
 run: $(NAME)
 	@echo "$(BGRN)Running $(NAME)$(CRESET)"
-	@./$(NAME)
+	@./$(NAME) M
 	@echo "$(BGRN)$(NAME) done!$(CRESET)"
 
 norma:
