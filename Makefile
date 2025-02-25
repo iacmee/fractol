@@ -21,7 +21,7 @@ CRESET = \e[0m
 
 all: $(NAME)
 
-$(NAME): $(MINILIBX) $(OBJ) $(LIBFT) 
+$(NAME): $(OBJ_DIR) $(MINILIBX) $(OBJ) $(LIBFT)
 	@echo "$(BBLU)Compiling $(NAME)$(CRESET)"
 	@$(CC) $(FLAGS) -I$(INCLUDES) $(OBJ) $(LIBFT) $(MINILIBX) -o $(NAME) -lXext -lX11 -lm
 	@echo "$(BBLU)$(NAME) compiled!$(CRESET)"
@@ -32,6 +32,10 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@${CC} ${FLAGS} -c $< -o $@ -I$(INCLUDES)
 	@tput rc
 	@tput el
+
+$(OBJ_DIR):
+	@echo "$(BCYN)Creating obj directory$(CRESET)"
+	@mkdir -p $(OBJ_DIR)
 
 opt: FLAGS += -DOPT -Ofast
 opt: clean all
