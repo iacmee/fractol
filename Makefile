@@ -7,7 +7,8 @@ SRC = $(wildcard $(SRC_DIR)*.c) # da modificare per aggiungere file manualmente
 OBJ = $(SRC:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 NAME = fractol
 LIBFT = libft/libft.a
-MINILIBX = minilibx-linux/libmlx.a
+MLX_DIR = minilibx-linux
+MINILIBX = $(MLX_DIR)/libmlx.a
 
 BBLK = \e[1;30m
 BRED = \e[1;31m
@@ -21,15 +22,15 @@ CRESET = \e[0m
 
 all: $(NAME)
 
-$(NAME): $(OBJ_DIR) $(MINILIBX) $(OBJ) $(LIBFT)
+$(NAME): $(MINILIBX) $(OBJ) $(LIBFT)
 	@echo "$(BBLU)Compiling $(NAME)$(CRESET)"
 	@$(CC) $(FLAGS) -I$(INCLUDES) $(OBJ) $(LIBFT) $(MINILIBX) -o $(NAME) -lXext -lX11 -lm
 	@echo "$(BBLU)$(NAME) compiled!$(CRESET)"
 	
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR) $(MLX_DIR)/mlx.h
 	@tput sc
 	@printf "$(BGRN)Compiling: $< $(CRESET)"
-	@${CC} ${FLAGS} -c $< -o $@ -I$(INCLUDES)
+	@${CC} ${FLAGS} -c $< -o $@ -I$(INCLUDES) -I$(MLX_DIR)
 	@tput rc
 	@tput el
 
@@ -46,9 +47,15 @@ $(LIBFT):
 	@$(MAKE) -C libft/ --no-print-directory
 	@echo "$(BCYN)exit libft directory$(CRESET)"
 
-$(MINILIBX):
+minilibx:
+	git submodule update --init --recursive -- $(MLX_DIR)
+
+$(MLX_DIR)/mlx.h:
+	@$(MAKE) minilibx --no-print-directory
+
+$(MINILIBX): | $(MLX_DIR)/mlx.h
 	@echo "$(BCYN)Entering minilibx-linux directory$(CRESET)"
-	@$(MAKE) -C minilibx-linux/ --no-print-directory
+	@$(MAKE) -C $(MLX_DIR) --no-print-directory
 	@echo "$(BCYN)exit minilibx-linux directory$(CRESET)"
 
 clean:
@@ -60,7 +67,9 @@ fclean: clean
 	@$(MAKE) -C libft/ fclean --no-print-directory
 	@echo "$(BCYN)Exiting libft directory$(CRESET)"
 	@echo "$(BCYN)Entering minilibx-linux directory for fclean$(CRESET)"
-	@$(MAKE) -C minilibx-linux/ clean --no-print-directory
+	@if [ -f $(MLX_DIR)/Makefile ]; then \
+		$(MAKE) -C $(MLX_DIR) clean --no-print-directory; \
+	fi
 	@echo "$(BCYN)Exiting minilibx-linux directory$(CRESET)"
 	@rm -f $(NAME)
 	@echo "$(BRED)$(NAME) cleaned!$(CRESET)"
@@ -73,8 +82,4 @@ run: $(NAME)
 	@./$(NAME) M
 	@echo "$(BGRN)$(NAME) done!$(CRESET)"
 
-norma:
-	norminette $(SRC)
-	norminette $(INCLUDES)*
-
-.PHONY : all clean fclean re run norma
+.PHONY : all clean fclean re run norma opt minilibx

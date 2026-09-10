@@ -15,7 +15,7 @@
 
 # include "libft.h"
 # include "mlx.h"
-# include "mlx_int.h"
+# include <X11/X.h>
 # include "struct_and_define.h"
 # include <math.h>
 

@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/mlx.h"
 #include "fractol.h"
-#include "mlx_int.h"
 #include <stdnoreturn.h>
 
 // this function will free all the allocated resources,
